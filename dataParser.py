@@ -31,19 +31,40 @@ dptos_id = [
     "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
     "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"
 ] #Esta lista tiene todos los values de los departamentos del dropdown
+dptos_nombres= [
+    "CIUDAD CAPITAL",   # 00
+    "GUATEMALA",        # 01
+    "EL PROGRESO",      # 02
+    "SACATEPEQUEZ",     # 03
+    "CHIMALTENANGO",    # 04
+    "ESCUINTLA",        # 05
+    "SANTA ROSA",       # 06
+    "SOLOLA",           # 07
+    "TOTONICAPAN",      # 08
+    "QUETZALTENANGO",   # 09
+    "SUCHITEPEQUEZ",    # 10
+    "RETALHULEU",       # 11
+    "SAN MARCOS",       # 12
+    "HUEHUETENANGO",    # 13
+    "QUICHE",           # 14
+    "BAJA VERAPAZ",     # 15
+    "ALTA VERAPAZ",     # 16
+    "PETEN",            # 17
+    "IZABAL",           # 18
+    "ZACAPA",           # 19
+    "CHIQUIMULA",       # 20
+    "JALAPA",           # 21
+    "JUTIAPA"           # 22
+]
 
-#Buscamos el botón que sirve para hacer la búsqueda
-
-
-
-
-for i in dptos_id:
+nombres_variables = set() #Este conjunto lo usamos para guardar los nombres de las variables
+for i in range(len(dptos_id)):
     # Ahora obtenemos la lista de departamentos
     select_departamento = wait.until(
     EC.presence_of_element_located((By.ID, "_ctl0_ContentPlaceHolder1_cmbDepartamento"))
     )
     departamento_dropdown = Select(select_departamento)
-    departamento_dropdown.select_by_value(i) #Seleccionamos el valor actual
+    departamento_dropdown.select_by_value(dptos_id[i]) #Seleccionamos el valor actual
     boton_consultar = wait.until(
         EC.element_to_be_clickable((By.ID, "_ctl0_ContentPlaceHolder1_IbtnConsultar"))
     ) #Buscar el botón para hacer la búsqueda
@@ -52,8 +73,20 @@ for i in dptos_id:
     establecimientos_list = wait.until(
         EC.presence_of_element_located((By.ID, "_ctl0_ContentPlaceHolder1_dgResultado"))
     )
+    filas = establecimientos_list.find_elements(By.TAG_NAME, "tr")
+    encabezados = [td.text.strip() for td in filas[0].find_elements(By.TAG_NAME, "td")][1:] #Hallar los nonbres de las variables
+    nombres_variables.update(encabezados) #Acumular en el conjunto
+
+    datos = []
+    for fila in filas[1:]:
+        celdas = fila.find_elements(By.TAG_NAME, "td")[1:]  # ignorar primera celda
+        fila_datos = [celda.text.strip() for celda in celdas]
+        datos.append(fila_datos)
+
+    df = pd.DataFrame(datos, columns=encabezados)
+    nombre_archivo = f"{dptos_nombres[i]}.csv"
+    df.to_csv(nombre_archivo, index=False, encoding="utf-8-sig")
+    print(f"Guardado: {nombre_archivo}\n")
 
 
-    print(establecimientos_list)
-
-
+print(nombres_variables)
