@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 import pandas as pd
+import os
 
 
 
@@ -84,7 +85,7 @@ for i in range(len(dptos_id)):
         datos.append(fila_datos)
 
     df = pd.DataFrame(datos, columns=encabezados)
-    nombre_archivo = f"{dptos_nombres[i]}.csv"
+    nombre_archivo = os.path.join("data", f"{dptos_nombres[i]}.csv")
     df.to_csv(nombre_archivo, index=False, encoding="utf-8-sig")
     print(f"Guardado: {nombre_archivo}\n")
 
