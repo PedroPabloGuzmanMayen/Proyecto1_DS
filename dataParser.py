@@ -59,6 +59,7 @@ dptos_nombres= [
 ]
 
 nombres_variables = set() #Este conjunto lo usamos para guardar los nombres de las variables
+resultado_final = []
 for i in range(len(dptos_id)):
     # Ahora obtenemos la lista de departamentos
     select_departamento = wait.until(
@@ -85,9 +86,12 @@ for i in range(len(dptos_id)):
         datos.append(fila_datos)
 
     df = pd.DataFrame(datos, columns=encabezados)
-    nombre_archivo = os.path.join("data", f"{dptos_nombres[i]}.csv")
-    df.to_csv(nombre_archivo, index=False, encoding="utf-8-sig")
-    print(f"Guardado: {nombre_archivo}\n")
+    resultado_final.append(df)
 
 
-print(nombres_variables)
+df_final = pd.concat(resultado_final, ignore_index=True)
+df_final.to_csv("establecimientos.csv", index=False, encoding="utf-8-sig")
+#Guardar las variables encontradas
+with open("nombres_variables.txt", "w", encoding="utf-8") as f:
+    for nombre in sorted(nombres_variables):
+        f.write(nombre + "\n")
