@@ -25,7 +25,7 @@ select_nivel = wait.until(
     EC.presence_of_element_located((By.ID, "_ctl0_ContentPlaceHolder1_cmbNivel"))
 )
 nivel_dropdown = Select(select_nivel)
-nivel_dropdown.select_by_value("46") 
+nivel_dropdown.select_by_value("TODOS") 
         
 
 dptos_id = [
